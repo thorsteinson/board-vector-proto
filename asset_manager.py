@@ -52,8 +52,11 @@ class AssetManager:
         self.save()
 
     def delete(self, n):
-        if n < len(self._entries):
+        if n < len(self._entries) and n >= 0:
+            path = Path(ASSET_FOLDER, self._entries[n].name)
+            os.remove(path)
             del (self._entries[n])
+            self.save()
 
     # Writes data to main file
     def save(self):
@@ -86,18 +89,28 @@ def get_points(args):
     ]
 
 
-add_parser = argparse.ArgumentParser(description="Add an asset with set coordinates")
-add_parser.add_argument("photopath", help="Path of the photo you want to add")
-add_parser.add_argument(
-    "x1", help="Pixel coordinates for perspective transform", type=int
-)
-add_parser.add_argument("y1", type=int)
-add_parser.add_argument("x2", type=int)
-add_parser.add_argument("y2", type=int)
-add_parser.add_argument("x3", type=int)
-add_parser.add_argument("y3", type=int)
-add_parser.add_argument("x4", type=int)
-add_parser.add_argument("y4", type=int)
+# Adds add as a sub command to a subparser
+def add_add_parser(subparsers):
+    add_parser = subparsers.add_parser("add", help="Add an asset with set coordinates")
+    add_parser.add_argument("photopath", help="Path of the photo you want to add")
+    add_parser.add_argument(
+        "x1", help="Pixel coordinates for perspective transform", type=int
+    )
+    add_parser.add_argument("y1", type=int)
+    add_parser.add_argument("x2", type=int)
+    add_parser.add_argument("y2", type=int)
+    add_parser.add_argument("x3", type=int)
+    add_parser.add_argument("y3", type=int)
+    add_parser.add_argument("x4", type=int)
+    add_parser.add_argument("y4", type=int)
+
+
+def add_delete_parser(subparsers):
+    delete_parser = subparsers.add_parser("delete", help="Remove an assset")
+    delete_parser.add_argument(
+        "n", type=int, help="The asset number you want to remove"
+    )
+
 
 interactive_add_parser = argparse.ArgumentParser(
     description="Add assets interactively by clicking points"
@@ -105,12 +118,3 @@ interactive_add_parser = argparse.ArgumentParser(
 interactive_add_parser.add_argument(
     "photopaths", nargs="?", help="Path of the photos you want to add"
 )
-
-delete_parser = argparse.ArgumentParser(description="Remove an assset")
-delete_parser.add_argument("n", type=int, help="The asset number you want to remove")
-
-if __name__ == "__main__":
-    args = add_parser.parse_args()
-
-    mgr = AssetManager()
-    mgr.add(Path(args.photopath), get_points(args))
