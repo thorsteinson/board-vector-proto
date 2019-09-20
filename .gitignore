@@ -1,3 +1,5 @@
-experiment
+experiment/
+assets/
+__pycache__/
 *.jpg
 *.png
