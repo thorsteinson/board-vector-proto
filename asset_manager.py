@@ -9,7 +9,6 @@ import os
 from pathlib import Path
 import argparse
 
-
 # A tuple to represent an entry in our database
 # - Name is the name of the file in our asset directory,
 # - Points is a vector of 4 points, describing the perspective transform
@@ -112,9 +111,10 @@ def add_delete_parser(subparsers):
     )
 
 
-interactive_add_parser = argparse.ArgumentParser(
-    description="Add assets interactively by clicking points"
-)
-interactive_add_parser.add_argument(
-    "photopaths", nargs="?", help="Path of the photos you want to add"
-)
+def add_add_interactive_parser(subparsers):
+    interactive_add_parser = subparsers.add_parser(
+        "iadd", help="Interactively add coordinates"
+    )
+    interactive_add_parser.add_argument(
+        "photopaths", nargs="+", help="Paths of the photos you want to add"
+    )
