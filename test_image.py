@@ -47,11 +47,32 @@ class TestGrayscale(unittest.TestCase):
     def test_dimensions_reduced(self):
         img = Image(test_array)
         img.grayscale()
-        self.assertTrue(img.is_gray)
+        self.assertTrue(img.is_gray())
 
     def test_x_y_same(self):
         img = Image(test_array)
         self.assertTrue(same_res(img, img.grayscale))
+
+    def idempotent(self):
+        img = Image(test_array)
+        img.grayscale()
+        img.grayscale()
+
+
+class TestColorConversion(unittest.TestCase):
+    def test_dimensions_increased(self):
+        img = Image(test_array)
+        img.bgr_color()
+        self.assertFalse(img.is_gray())
+
+    def test_x_y_same(self):
+        img = Image(test_array)
+        self.assertTrue(same_res(img, img.bgr_color))
+
+    def idempotent(self):
+        img = Image(test_array)
+        img.bgr_color()
+        img.bgr_color()
 
 
 if __name__ == "__main__":

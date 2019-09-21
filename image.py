@@ -27,18 +27,20 @@ class Image:
     # color or grayscale in colorspace
     def is_gray(self):
         if len(self.img.shape) == 2:
-            return true
+            return True
         elif len(self.img.shape) == 3:
-            return false
+            return False
         raise ValueError
 
     # Converts the image to grayscale
     def grayscale(self):
-        self.img = cv.cvtColor(self.img, cv.COLOR_BGR2GRAY)
+        if not self.is_gray():
+            self.img = cv.cvtColor(self.img, cv.COLOR_BGR2GRAY)
 
     # Converts image to BGR colorspace
     def bgr_color(self):
-        self.img = cv.cvtColor(self.img, cv.COLOR_GRAY2BGR)
+        if self.is_gray():
+            self.img = cv.cvtColor(self.img, cv.COLOR_GRAY2BGR)
 
     # Takes a binary image, and applies a threshold on sections of pixels
     # that don't meet a given area. This can effectively filter bits of
