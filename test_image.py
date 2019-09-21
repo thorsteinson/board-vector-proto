@@ -75,5 +75,20 @@ class TestColorConversion(unittest.TestCase):
         img.bgr_color()
 
 
+class TestAreaThreshold(unittest.TestCase):
+    def test_only_grayscale(self):
+        img = Image(test_array)
+        with self.assertRaises(ValueError):
+            img.area_threshold(10)
+
+    def test_only_positive_areas(self):
+        img = Image(test_array)
+        img.grayscale()
+        with self.assertRaises(ValueError):
+            img.area_threshold(-1)
+        with self.assertRaises(ValueError):
+            img.area_threshold(0)
+
+
 if __name__ == "__main__":
     unittest.main()

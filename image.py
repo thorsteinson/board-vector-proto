@@ -46,6 +46,12 @@ class Image:
     # that don't meet a given area. This can effectively filter bits of
     # noise from actual blocks of text we wish to capture on the board
     def area_threshold(self, area):
+        if not self.is_gray():
+            raise ValueError
+
+        if area < 1:
+            raise ValueError
+
         # Keep track of each coordinate and the set that it belongs to
         regionMap = {}
 
