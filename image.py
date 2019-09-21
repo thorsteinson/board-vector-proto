@@ -26,9 +26,9 @@ class Image:
     # Looks at number of dimensions to determine whether the image is
     # color or grayscale in colorspace
     def is_gray(self):
-        if self.img.shape[2] == 1:
+        if len(self.img.shape) == 2:
             return true
-        elif self.img.shape[2] == 3:
+        elif len(self.img.shape) == 3:
             return false
         raise ValueError
 
