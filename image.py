@@ -16,7 +16,7 @@ class Image:
             f.close()
             self.img = cv.imread(str(path.resolve()))
         elif isinstance(image, np.ndarray):
-            self.img = image
+            self.img = copy(image)
         else:
             raise TypeError
 
