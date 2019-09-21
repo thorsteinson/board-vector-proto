@@ -34,11 +34,11 @@ class Image:
 
     # Converts the image to grayscale
     def grayscale(self):
-        self.img = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
+        self.img = cv.cvtColor(self.img, cv.COLOR_BGR2GRAY)
 
     # Converts image to BGR colorspace
     def bgr_color(self):
-        self.img = cv.cvtColor(img, cv.COLOR_GRAY2BGR)
+        self.img = cv.cvtColor(self.img, cv.COLOR_GRAY2BGR)
 
     # Takes a binary image, and applies a threshold on sections of pixels
     # that don't meet a given area. This can effectively filter bits of

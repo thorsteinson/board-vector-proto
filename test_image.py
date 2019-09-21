@@ -23,8 +23,8 @@ class TestInit(unittest.TestCase):
 
 
 def same_res(img, func):
-    x_res = img.xres
-    y_res = img.xres
+    x_res = img.x_res
+    y_res = img.y_res
     func()
 
     return img.x_res == x_res and img.y_res == y_res
@@ -41,6 +41,17 @@ class TestCopy(unittest.TestCase):
         img_cp.img[0, 0, 0] = 1
 
         self.assertNotEqual(img.img[0, 0, 0], 1)
+
+
+class TestGrayscale(unittest.TestCase):
+    def test_dimensions_reduced(self):
+        img = Image(test_array)
+        img.grayscale()
+        self.assertTrue(img.is_gray)
+
+    def test_x_y_same(self):
+        img = Image(test_array)
+        self.assertTrue(same_res(img, img.grayscale))
 
 
 if __name__ == "__main__":
