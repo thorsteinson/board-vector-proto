@@ -15,7 +15,7 @@ class Image:
             raise TypeError
 
     def __copy__(self):
-        return copy(self.img)
+        return Image(copy(self.img))
 
     # Looks at number of dimensions to determine whether the image is
     # color or grayscale in colorspace
