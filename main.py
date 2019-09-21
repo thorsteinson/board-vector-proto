@@ -49,13 +49,12 @@ def interactive_add(args):
     points = []
     cv.setMouseCallback("image", get_point, points)
     for path in paths:
-        img = cv.imread(str(path))
-        xres = img.shape[1]
-        yres = img.shape[0]
+        img = Image(path)
+        factor = img.scale_bounded(X_MAX, Y_MAX)
 
         cv.imshow(
             "image",
-            cv.resize(img, (round(xres / SCALE_FACTOR), round(yres / SCALE_FACTOR))),
+            img.img
         )
 
         while len(points) < 4:
@@ -65,7 +64,8 @@ def interactive_add(args):
             cv.waitKey(10)
 
         # Now we can add an entry to our db
-        mgr.add(path, [(p[0] * SCALE_FACTOR, p[1] * SCALE_FACTOR) for p in points])
+        inverse = 1 / factor
+        mgr.add(path, [(round(p[0] * inverse),  round(p[1] * inverse)) for p in points])
         points.clear()
 
 
