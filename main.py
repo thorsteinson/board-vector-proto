@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 # The main interface for the program. Divides everything into sub
 # commands for an easy to use iterface with a single entry point.
 
