@@ -155,6 +155,9 @@ class Image:
         self.img = cv.blur(self.img, (kernel_size, kernel_size))
 
     def threshold(self, percent_black):
+        if percent_black < 0 or percent_black > 1.0:
+            raise ValueError
+
         _, self.img = cv.threshold(
             self.img, 255 - int(percent_black * 255), 255, cv.THRESH_BINARY
         )

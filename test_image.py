@@ -138,5 +138,14 @@ class TestBlur(unittest.TestCase):
                 img.blur(kernel)
 
 
+class TestThreshold(unittest.TestCase):
+    def test_valid_percent(self):
+        img = Image(test_array)
+        bad_percent = [-1, -2, 1.23, 100]
+        for p in bad_percent:
+            with self.assertRaises(ValueError):
+                img.threshold(p)
+
+
 if __name__ == "__main__":
     unittest.main()
