@@ -104,5 +104,14 @@ class TestCropBorder(unittest.TestCase):
             img.crop_border(0.6)
 
 
+class TestPerspectiveTransform(unittest.TestCase):
+    def test_valid_points(self):
+        img = Image(test_array)
+        bad_points = [[1], [(1, 0), ("1", 0), (1, 1), (1, 1)]]
+        for points in bad_points:
+            with self.assertRaises(ValueError):
+                img.perspective_transform(points)
+
+
 if __name__ == "__main__":
     unittest.main()

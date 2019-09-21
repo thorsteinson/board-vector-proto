@@ -102,6 +102,12 @@ class Image:
 
     # Returns an image that's projected from the 4 given points
     def perspective_transform(self, points):
+        if len(points) != 4:
+            raise ValueError
+        for p in points:
+            if type(p[0]) != int or type(p[1] != int):
+                raise ValueError
+
         top_left = points[0]
         top_right = points[1]
         bottom_right = points[2]
