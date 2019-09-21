@@ -175,19 +175,22 @@ class Image:
     # Writes a watermark to the bottom left corner of an image. The
     # water mark consists of the keys and values in the dictionary passed
     def watermark(self, dictionary):
+        if type(dictionary) != dict:
+            raise TypeError
+
         if self.is_gray():
             self.bgr_color()
 
         (_, line_height), _ = cv.getTextSize("TEXT", cv.FONT_HERSHEY_DUPLEX, 1.0, 0)
 
         x = round(self.x_res * 0.05)
-        y = round(self.yres - self.y_res * 0.05)
+        y = round(self.y_res - self.y_res * 0.05)
 
         for k, v in dictionary.items():
             self.img = cv.putText(
                 self.img,
                 "{}: {}".format(k, v),
-                (xP, yP),
+                (x, y),
                 cv.FONT_HERSHEY_DUPLEX,
                 1,
                 (192, 36, 27),

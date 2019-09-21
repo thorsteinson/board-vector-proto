@@ -147,5 +147,18 @@ class TestThreshold(unittest.TestCase):
                 img.threshold(p)
 
 
+class TestWatermark(unittest.TestCase):
+    def test_valid_values(self):
+        img = Image(test_array)
+        bad_dicts = [1.0, 1, None, False]
+        for d in bad_dicts:
+            with self.assertRaises(TypeError):
+                img.watermark(d)
+
+    def test_res_preserved(self):
+        img = Image(test_array)
+        self.assertTrue(same_res(img, lambda: img.watermark({"test": 1})))
+
+
 if __name__ == "__main__":
     unittest.main()
