@@ -11,6 +11,7 @@ import cv2 as cv
 import time
 import numpy as np
 from cmdlet import Commander, Cmdlet
+from image import Image
 
 
 def get_point(event, x, y, flags, points):
@@ -21,25 +22,8 @@ def get_point(event, x, y, flags, points):
 
 SCALE_FACTOR = 4
 
-
-def transform_img(img, points):
-    top_left = points[0]
-    top_right = points[1]
-    bottom_right = points[2]
-    bottom_left = points[3]
-
-    source = np.array([top_left, top_right, bottom_right, bottom_left], dtype="float32")
-    maxW = max(top_right[0] - top_left[0], bottom_right[0] - bottom_left[0])
-    maxH = max(bottom_right[1] - top_right[1], bottom_left[1] - top_left[1])
-    # This determines the output size we want to map onto. It's not
-    # perfect, but it's good enough to get the general shape of what
-    # was captured
-    dest = np.array(
-        [(0, 0), (maxW - 1, 0), (maxW - 1, maxH - 1), (0, maxH - 1)], dtype="float32"
-    )
-    transM = cv.getPerspectiveTransform(source, dest)
-
-    return cv.warpPerspective(img, transM, (maxW, maxH))
+X_MAX = 1850
+Y_MAX = 1000
 
 
 def view(args):
@@ -47,16 +31,13 @@ def view(args):
 
     (path, points) = mgr.get(args.n)
 
-    img = cv.imread(str(path))
-    transformed = transform_img(img, points)
-    xres = transformed.shape[1]
-    yres = transformed.shape[0]
+    img = Image(path)
+    img.perspective_transform(points)
+    img.scale_bounded(X_MAX, Y_MAX)
     cv.namedWindow("image")
     cv.imshow(
         "image",
-        cv.resize(
-            transformed, (round(xres / SCALE_FACTOR), round(yres / SCALE_FACTOR))
-        ),
+        img.img,
     )
     cv.waitKey()
 
