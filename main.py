@@ -13,10 +13,7 @@ import numpy as np
 from cmdlet import Commander, Cmdlet
 
 
-def get_point(event, x, y, flags, params):
-    scaleFactor = params[0]
-    points = params[1]
-
+def get_point(event, x, y, flags, points):
     # The button click is finished, get the position
     if event == cv.EVENT_LBUTTONUP:
         points.append((x, y))
@@ -69,7 +66,7 @@ def interactive_add(args):
     paths = [Path(p) for p in args.photopaths]
     cv.namedWindow("image")
     points = []
-    cv.setMouseCallback("image", get_point, param=(SCALE_FACTOR, points))
+    cv.setMouseCallback("image", get_point, points)
     for path in paths:
         img = cv.imread(str(path))
         xres = img.shape[1]
