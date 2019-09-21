@@ -1,6 +1,7 @@
 import cv2 as cv
 import numpy as np
 from pathlib import Path
+from copy import copy
 
 
 class Image:
@@ -11,10 +12,10 @@ class Image:
             # Since imread doesn't raise an exception, attempt to grab
             # the file handle to trigger an appropriate error if there
             # are any file errors
-            f = open(path, "rb")
+            f = open(image, "rb")
             f.close()
             self.img = cv.imread(str(path.resolve()))
-        elif isinstance(ndarray, image):
+        elif isinstance(image, np.ndarray):
             self.img = image
         else:
             raise TypeError
@@ -109,7 +110,7 @@ class Image:
         )
         transM = cv.getPerspectiveTransform(source, dest)
 
-    self.img = cv.warpPerspective(self.img, transM, (maxW, maxH))
+        self.img = cv.warpPerspective(self.img, transM, (maxW, maxH))
 
     def adaptive_threshold(self, block_size, c):
         if block_size % 2 != 1 or block_size <= 1:
