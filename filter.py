@@ -6,6 +6,7 @@ PROJECT_DIR = "./experiment"
 INDEX_FILE = PROJECT_DIR + "/index.dat"
 SPACE_KEY = 32
 
+
 def collect_data(data_map):
     for i, data in data_map.items():
         img = cv.imread("{}/out_{}.png".format(PROJECT_DIR, i))
@@ -16,7 +17,9 @@ def collect_data(data_map):
 
 
 def summarize_stats(data_map):
-    quality_params = [data["params"] for data in data_map.values() if data["good_image"]]
+    quality_params = [
+        data["params"] for data in data_map.values() if data["good_image"]
+    ]
 
     keys = [
         "adaptive_block_size",
@@ -38,6 +41,7 @@ def summarize_stats(data_map):
         means[k] = total / n
 
     return means
+
 
 if __name__ == "__main__":
     with open(INDEX_FILE, "r+b") as idx_file:
