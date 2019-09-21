@@ -169,6 +169,6 @@ class Image:
     # Writes the image to the specified path, possibly encoding the
     # image in the process
     def save(self, path):
-        f = open(path, 'wb')
+        f = open(path, "wb")
         f.close()
         imwrite(self, self.img, str(path.resolve()))
