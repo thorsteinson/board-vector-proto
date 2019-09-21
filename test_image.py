@@ -129,5 +129,14 @@ class TestAdaptiveThreshold(unittest.TestCase):
                 img.adaptive_threshold(3, c)
 
 
+class TestBlur(unittest.TestCase):
+    def test_valid_kernel_size(self):
+        img = Image(test_array)
+        bad_kernels = [-1, -2, 1, 2, 4, 100]
+        for kernel in bad_kernels:
+            with self.assertRaises(ValueError):
+                img.blur(kernel)
+
+
 if __name__ == "__main__":
     unittest.main()

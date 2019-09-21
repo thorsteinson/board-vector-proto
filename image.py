@@ -149,6 +149,9 @@ class Image:
         )  # Constant that is subtracted during thresholding
 
     def blur(self, kernel_size):
+        if kernel_size % 2 != 1 or kernel_size <= 1:
+            raise ValueError
+
         self.img = cv.blur(self.img, (kernel_size, kernel_size))
 
     def threshold(self, percent_black):
