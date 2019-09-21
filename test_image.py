@@ -89,6 +89,20 @@ class TestAreaThreshold(unittest.TestCase):
         with self.assertRaises(ValueError):
             img.area_threshold(0)
 
+    def res_preserved(self):
+        img = Image(test_array)
+        img.grayscale()
+        self.assertTrue(same_res(img, lambda: img.area_threshold(0.2)))
+
+
+class TestCropBorder(unittest.TestCase):
+    def test_valid_vals(self):
+        img = Image(test_array)
+        with self.assertRaises(ValueError):
+            img.crop_border(-100)
+        with self.assertRaises(ValueError):
+            img.crop_border(0.6)
+
 
 if __name__ == "__main__":
     unittest.main()

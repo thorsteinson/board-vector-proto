@@ -86,6 +86,9 @@ class Image:
         self.img = filtered
 
     def crop_border(self, percent):
+        if percent > 0.5 or percent < 0:
+            raise ValueError
+
         y = self.img.shape[0]
         y_offset = round(y * percent)
         y_size = y - y_offset * 2
