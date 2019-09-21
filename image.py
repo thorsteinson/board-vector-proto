@@ -105,7 +105,7 @@ class Image:
         if len(points) != 4:
             raise ValueError
         for p in points:
-            if type(p[0]) != int or type(p[1] != int):
+            if type(p[0]) != int or type(p[1]) != int:
                 raise ValueError
 
         top_left = points[0]
