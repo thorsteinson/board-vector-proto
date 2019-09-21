@@ -113,5 +113,21 @@ class TestPerspectiveTransform(unittest.TestCase):
                 img.perspective_transform(points)
 
 
+class TestAdaptiveThreshold(unittest.TestCase):
+    def test_valid_block_sizes(self):
+        img = Image(test_array)
+        bad_blocks = [-1, 2, 4, 6, 1]
+        for block in bad_blocks:
+            with self.assertRaises(ValueError):
+                img.adaptive_threshold(block, 0)
+
+    def test_valid_c(self):
+        img = Image(test_array)
+        bad_cs = [None, complex(1, 2), "hello"]
+        for c in bad_cs:
+            with self.assertRaises(ValueError):
+                img.adaptive_threshold(3, c)
+
+
 if __name__ == "__main__":
     unittest.main()

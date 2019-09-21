@@ -132,6 +132,10 @@ class Image:
     def adaptive_threshold(self, block_size, c):
         if block_size % 2 != 1 or block_size <= 1:
             raise ValueError
+        try:
+            c = float(c)
+        except TypeError:
+            raise ValueError
 
         self.img = cv.adaptiveThreshold(
             self.img,
