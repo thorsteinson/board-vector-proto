@@ -14,7 +14,7 @@ class Image:
             # are any file errors
             f = open(image, "rb")
             f.close()
-            self.img = cv.imread(str(path.resolve()))
+            self.img = cv.imread(str(image.resolve()))
         elif isinstance(image, np.ndarray):
             self.img = copy(image)
         else:
