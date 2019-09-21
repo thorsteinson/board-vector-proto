@@ -160,5 +160,46 @@ class TestWatermark(unittest.TestCase):
         self.assertTrue(same_res(img, lambda: img.watermark({"test": 1})))
 
 
+class TestScale(unittest.TestCase):
+    def test_valid_scales(self):
+        img = Image(test_array)
+        with self.assertRaises(ValueError):
+            img.scale(-2)
+
+    def test_double_res(self):
+        img = Image(test_array)
+        img.scale(2)
+        self.assertEquals(test_array.shape[0] * 2, img.y_res)
+        self.assertEquals(test_array.shape[1] * 2, img.x_res)
+
+
+class TestScaleBounded(unittest.TestCase):
+    def test_valid_resize(self):
+        img = Image(test_array)
+        with self.assertRaises(ValueError):
+            img.scale_bounded(-1, 100)
+        with self.assertRaises(ValueError):
+            img.scale_bounded(100, -1)
+
+    def test_fits_bounds(self):
+        img = Image(np.zeros((102, 10), dtype="uint8"))
+        factor = img.scale_bounded(1000, 1000)
+        max_res = max(img.x_res, img.y_res)
+        self.assertEquals(1000, max_res)
+        self.assertIsInstance(factor, float)
+
+    # If we invert the scale factor, we should return to our original resolution.
+    def test_factor_invertible(self):
+        img = Image(test_array)
+        init_x = img.x_res
+        init_y = img.y_res
+
+        factor = img.scale_bounded(1000, 1000)
+        img.scale(1 / factor)
+
+        self.assertEquals(init_x, img.x_res)
+        self.assertEquals(init_y, img.y_res)
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -203,3 +203,29 @@ class Image:
         f = open(path, "wb")
         f.close()
         imwrite(self, self.img, str(path.resolve()))
+
+    def scale(self, factor):
+        if factor < 0:
+            raise ValueError
+
+        projected_x_res = round(self.x_res * factor)
+        projected_y_res = round(self.y_res * factor)
+        self.img = cv.resize(self.img, (projected_x_res, projected_y_res))
+
+    # Scales an image so that it's bounded by either the x or y max
+    # provided. The aspect ratio is preserved. Returns the scaling
+    # factor that was used
+    def scale_bounded(self, x_max, y_max):
+        if type(x_max) != int or type(y_max) != int:
+            raise TypeError
+
+        if x_max < 1 or y_max < 1:
+            raise ValueError
+
+        x_scale = x_max / self.x_res
+        y_scale = y_max / self.y_res
+
+        factor = min(x_scale, y_scale)
+        self.scale(min(x_scale, y_scale))
+
+        return factor
