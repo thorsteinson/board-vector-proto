@@ -8,6 +8,11 @@ class Image:
     # references an image or an array literal
     def __init__(self, image):
         if isinstance(image, Path):
+            # Since imread doesn't raise an exception, attempt to grab
+            # the file handle to trigger an appropriate error if there
+            # are any file errors
+            f = open(path, "rb")
+            f.close()
             self.img = cv.imread(str(path.resolve()))
         elif isinstance(ndarray, image):
             self.img = image
@@ -160,3 +165,10 @@ class Image:
                 (192, 36, 27),
             )
             y -= round(line_height * 1.1)
+
+    # Writes the image to the specified path, possibly encoding the
+    # image in the process
+    def save(self, path):
+        f = open(path, 'wb')
+        f.close()
+        imwrite(self, self.img, str(path.resolve()))
