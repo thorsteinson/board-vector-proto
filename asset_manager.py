@@ -8,6 +8,7 @@ import collections
 import os
 from pathlib import Path
 import argparse
+from cmdlet import Cmdlet
 
 # A tuple to represent an entry in our database
 # - Name is the name of the file in our asset directory,
@@ -90,33 +91,30 @@ def get_points(args):
     ]
 
 
-# Adds add as a sub command to a subparser
-def add_add_parser(subparsers):
-    add_parser = subparsers.add_parser("add", help="Add an asset with set coordinates")
-    add_parser.add_argument("photopath", help="Path of the photo you want to add")
-    add_parser.add_argument(
-        "x1", help="Pixel coordinates for perspective transform", type=int
-    )
-    add_parser.add_argument("y1", type=int)
-    add_parser.add_argument("x2", type=int)
-    add_parser.add_argument("y2", type=int)
-    add_parser.add_argument("x3", type=int)
-    add_parser.add_argument("y3", type=int)
-    add_parser.add_argument("x4", type=int)
-    add_parser.add_argument("y4", type=int)
+def add(args):
+    mgr = AssetManager()
+    print(args)
+    mgr.add(Path(args.photopath), assets.get_points(args))
 
 
-def add_delete_parser(subparsers):
-    delete_parser = subparsers.add_parser("delete", help="Remove an assset")
-    delete_parser.add_argument(
-        "n", type=int, help="The asset number you want to remove"
-    )
+add_cmd = Cmdlet("add", "Add an asset with set coordinates", add)
+add_cmd.add_arg("photopath", help="Path of the photo you want to add").add_arg(
+    "x1", help="Pixel coordinates for perspective transform", type=int
+).add_arg("y1", type=int).add_arg("x2", type=int).add_arg("y2", type=int).add_arg(
+    "x3", type=int
+).add_arg(
+    "y3", type=int
+).add_arg(
+    "x4", type=int
+).add_arg(
+    "y4", type=int
+)
 
 
-def add_add_interactive_parser(subparsers):
-    interactive_add_parser = subparsers.add_parser(
-        "iadd", help="Interactively add coordinates"
-    )
-    interactive_add_parser.add_argument(
-        "photopaths", nargs="+", help="Paths of the photos you want to add"
-    )
+def delete_asset(args):
+    mgr = AssetManager()
+    mgr.delete(args.n)
+
+
+delete_cmd = Cmdlet("delete", "Remove an asset from the db", delete_asset)
+delete_cmd.add_arg("n", type=int, help="The asset number you want to remove")

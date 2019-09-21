@@ -10,24 +10,7 @@ from pathlib import Path
 import cv2 as cv
 import time
 import numpy as np
-
-
-def add(args):
-    mgr = assets.AssetManager()
-    mgr.add(Path(args.photopath), assets.get_points(args))
-
-
-def delete(args):
-    mgr = assets.AssetManager()
-    mgr.delete(args.n)
-
-
-def add_view_parser(subparsers):
-    view_parser = subparsers.add_parser(
-        "view",
-        help="View an image in the db with the perspective transformation applied",
-    )
-    view_parser.add_argument("n", type=int, help="Image number in the db to lookup")
+from cmdlet import Commander, Cmdlet
 
 
 def get_point(event, x, y, flags, params):
@@ -108,23 +91,18 @@ def interactive_add(args):
         points.clear()
 
 
-command_map = {"add": add, "delete": delete, "iadd": interactive_add, "view": view}
-
 if __name__ == "__main__":
-    main_parser = argparse.ArgumentParser("Board Vector")
+    iadd_cmd = Cmdlet("iadd", "Interactively add coordinates", interactive_add)
+    iadd_cmd.add_arg(
+        "photopaths", nargs="+", help="Paths of the photos you want to add"
+    )
 
-    subparsers = main_parser.add_subparsers(help="sub command help")
+    view_cmd = Cmdlet(
+        "view",
+        "View an image in the db with the perspective transformation applied",
+        view,
+    )
+    view_cmd.add_arg("n", type=int, help="Image number in the db to lookup")
 
-    assets.add_add_parser(subparsers)
-    assets.add_delete_parser(subparsers)
-    assets.add_add_interactive_parser(subparsers)
-    add_view_parser(subparsers)
-
-    args = main_parser.parse_args()
-
-    command = sys.argv[1]
-
-    if command not in command_map:
-        raise ValueError
-
-    command_map[command](args)
+    commander = Commander([assets.add_cmd, assets.delete_cmd, iadd_cmd, view_cmd])
+    commander.run()
