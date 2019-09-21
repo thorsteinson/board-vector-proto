@@ -7,6 +7,7 @@ import asset_manager as assets
 from pathlib import Path
 import cv2 as cv
 import time
+import numpy as np
 
 
 def add(args):
@@ -17,6 +18,14 @@ def add(args):
 def delete(args):
     mgr = assets.AssetManager()
     mgr.delete(args.n)
+
+
+def add_view_parser(subparsers):
+    view_parser = subparsers.add_parser(
+        "view",
+        help="View an image in the db with the perspective transformation applied",
+    )
+    view_parser.add_argument("n", type=int, help="Image number in the db to lookup")
 
 
 def get_point(event, x, y, flags, params):
@@ -31,6 +40,45 @@ def get_point(event, x, y, flags, params):
 
 
 SCALE_FACTOR = 4
+
+
+def transform_img(img, points):
+    top_left = points[0]
+    top_right = points[1]
+    bottom_right = points[2]
+    bottom_left = points[3]
+
+    source = np.array([top_left, top_right, bottom_right, bottom_left], dtype="float32")
+    maxW = max(top_right[0] - top_left[0], bottom_right[0] - bottom_left[0])
+    maxH = max(bottom_right[1] - top_right[1], bottom_left[1] - top_left[1])
+    # This determines the output size we want to map onto. It's not
+    # perfect, but it's good enough to get the general shape of what
+    # was captured
+    dest = np.array(
+        [(0, 0), (maxW - 1, 0), (maxW - 1, maxH - 1), (0, maxH - 1)], dtype="float32"
+    )
+    transM = cv.getPerspectiveTransform(source, dest)
+
+    return cv.warpPerspective(img, transM, (maxW, maxH))
+
+
+def view(args):
+    mgr = assets.AssetManager()
+
+    (path, points) = mgr.get(args.n)
+
+    img = cv.imread(str(path))
+    transformed = transform_img(img, points)
+    xres = transformed.shape[1]
+    yres = transformed.shape[0]
+    cv.namedWindow("image")
+    cv.imshow(
+        "image",
+        cv.resize(
+            transformed, (round(xres / SCALE_FACTOR), round(yres / SCALE_FACTOR))
+        ),
+    )
+    cv.waitKey()
 
 
 def interactive_add(args):
@@ -57,11 +105,11 @@ def interactive_add(args):
             cv.waitKey(10)
 
         # Now we can add an entry to our db
-        mgr.add(path, points.copy())
+        mgr.add(path, [(p[0] * SCALE_FACTOR, p[1] * SCALE_FACTOR) for p in points])
         points.clear()
 
 
-command_map = {"add": add, "delete": delete, "iadd": interactive_add}
+command_map = {"add": add, "delete": delete, "iadd": interactive_add, "view": view}
 
 if __name__ == "__main__":
     main_parser = argparse.ArgumentParser("Board Vector")
@@ -71,6 +119,7 @@ if __name__ == "__main__":
     assets.add_add_parser(subparsers)
     assets.add_delete_parser(subparsers)
     assets.add_add_interactive_parser(subparsers)
+    add_view_parser(subparsers)
 
     args = main_parser.parse_args()
 

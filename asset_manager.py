@@ -62,8 +62,10 @@ class AssetManager:
         with open(ASSET_DATA_FILE, "wb") as data_f:
             pickle.dump(self._entries, data_f)
 
+    # Returns the PATH (not name), and the transform points
     def get(self, i):
-        return self._entries[i]
+        entry = self._entries[i]
+        return (Path(ASSET_FOLDER, entry.name), entry.points)
 
 
 def validate_points(points):
