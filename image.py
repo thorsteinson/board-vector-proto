@@ -251,4 +251,6 @@ class Image:
         if type(x) != int or type(y) != int:
             raise TypeError
 
-        self.img = cv.drawMarker(self.img, (x, y), (192, 36, 27), 2)
+        self.img = cv.drawMarker(
+            self.img, (x, y), (192, 36, 27), cv.MARKER_CROSS, 20, 2
+        )
