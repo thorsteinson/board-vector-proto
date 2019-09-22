@@ -47,10 +47,8 @@ def interactive_add(args):
             if len(points) == 4:
                 p1 = points[-1]
                 p2 = points[0]
-                p3 = points[-2]
                 img.draw_line(p1, p2)
-                img.draw_line(p1, p3)
-            elif len(points) > 1:
+            if len(points) > 1:
                 p1 = points[-2]
                 p2 = points[-1]
                 img.draw_line(p1, p2)
