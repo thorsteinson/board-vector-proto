@@ -15,12 +15,6 @@ from image import Image
 from window import Window
 
 
-def get_point(event, x, y, flags, points):
-    # The button click is finished, get the position
-    if event == cv.EVENT_LBUTTONUP:
-        points.append((x, y))
-
-
 X_MAX = 1850
 Y_MAX = 1000
 
@@ -41,20 +35,16 @@ def view(args):
 def interactive_add(args):
     mgr = assets.AssetManager()
     paths = [Path(p) for p in args.photopaths]
-    cv.namedWindow("image")
+    win = Window()
     points = []
-    cv.setMouseCallback("image", get_point, points)
+    win.handle_click(lambda x, y: points.append((x, y)))
+    win.quit_on(lambda points: len(points) >= 4, data=points)
     for path in paths:
         img = Image(path)
         factor = img.scale_bounded(X_MAX, Y_MAX)
-
-        cv.imshow("image", img.img)
-
-        while len(points) < 4:
-            # Wait key must be called! Otherwise the event loop
-            # doesn't run. We'll basically move the clock forward
-            # every 10 ms
-            cv.waitKey(10)
+        win.show(img)
+        win.run()
+        # At this point, we must have all 4 points, or they pressed q
 
         # Now we can add an entry to our db
         inverse = 1 / factor
