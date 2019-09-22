@@ -47,7 +47,14 @@ class Window:
     # has been reached through the quit_on callback, or through close
     # being called on the window.
     def run(self):
-        while not (self.exit or self.quit_handler(self.quit_data)):
+        while not self.exit:
+            if self.quit_data:
+                quit = self.quit_handler(self.quit_data)
+            else:
+                quit = self.quit_handler()
+            if quit:
+                break
+
             k = cv.waitKey(WAIT_PERIOD)
             pair = self.key_handlers.get(k)
             if pair:
@@ -78,7 +85,7 @@ class Window:
 
         self.key_handlers[k] = (handler, data)
 
-    def quit_on(self, quit_handler, data):
+    def quit_on(self, quit_handler, data=None):
         self.quit_handler = quit_handler
         self.quit_data = data
 
