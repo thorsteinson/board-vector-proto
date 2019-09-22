@@ -54,6 +54,8 @@ def interactive_add(args):
                 p1 = points[-2]
                 p2 = points[-1]
                 img.draw_line(p1, p2)
+
+            img.draw_point(x, y)
             win.show(img)
         else:
             # Reset image to the scaled down version with no lines, and
