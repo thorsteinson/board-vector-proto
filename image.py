@@ -3,6 +3,8 @@ import numpy as np
 from pathlib import Path
 from copy import copy
 
+DEFAULT_COLOR = (192, 36, 27)
+
 
 class Image:
     # Allow an image to be constructed from either a path that
@@ -193,7 +195,7 @@ class Image:
                 (x, y),
                 cv.FONT_HERSHEY_DUPLEX,
                 1,
-                (192, 36, 27),
+                DEFAULT_COLOR,
             )
             y -= round(line_height * 1.1)
 
@@ -245,12 +247,12 @@ class Image:
         if y1 > self.y_res - 1 or y2 > self.y_res - 1:
             raise ValueError
 
-        self.img = cv.line(self.img, p1, p2, (192, 36, 27), 2)
+        self.img = cv.line(self.img, p1, p2, DEFAULT_COLOR, 2)
 
     def draw_point(self, x, y):
         if type(x) != int or type(y) != int:
             raise TypeError
 
         self.img = cv.drawMarker(
-            self.img, (x, y), (192, 36, 27), cv.MARKER_CROSS, 20, 2
+            self.img, (x, y), DEFAULT_COLOR, cv.MARKER_CROSS, 20, 2
         )
