@@ -20,7 +20,9 @@ class Image:
         elif isinstance(image, np.ndarray):
             self.img = copy(image)
         else:
-            raise TypeError
+            raise TypeError(
+                "Image must be constructed with a numpy array or path to an image"
+            )
 
     def __copy__(self):
         return Image(copy(self.img))
@@ -49,10 +51,10 @@ class Image:
     # noise from actual blocks of text we wish to capture on the board
     def area_threshold(self, area):
         if not self.is_gray():
-            raise ValueError
+            raise ValueError("Image must be grayscale")
 
         if area < 1:
-            raise ValueError
+            raise ValueError("Area cannot be less than 1")
 
         # Keep track of each coordinate and the set that it belongs to
         regionMap = {}
@@ -89,7 +91,7 @@ class Image:
 
     def crop_border(self, percent):
         if percent > 0.5 or percent < 0:
-            raise ValueError
+            raise ValueError("Border percent must be between 0-0.5")
 
         y = self.img.shape[0]
         y_offset = round(y * percent)
@@ -105,10 +107,10 @@ class Image:
     # Returns an image that's projected from the 4 given points
     def perspective_transform(self, points):
         if len(points) != 4:
-            raise ValueError
-        for p in points:
-            if type(p[0]) != int or type(p[1]) != int:
-                raise ValueError
+            raise ValueError("Exactly 4 points must be provided")
+        for x, y in points:
+            if type(x) != int or type(y) != int:
+                raise ValueError("Non integer value passed as point")
 
         top_left = points[0]
         top_right = points[1]
@@ -133,11 +135,11 @@ class Image:
 
     def adaptive_threshold(self, block_size, c):
         if block_size % 2 != 1 or block_size <= 1:
-            raise ValueError
+            raise ValueError("Block size must be odd integer greater than 1")
         try:
             c = float(c)
         except TypeError:
-            raise ValueError
+            raise ValueError("Constant c is not a numeric value")
 
         self.img = cv.adaptiveThreshold(
             self.img,
@@ -152,13 +154,13 @@ class Image:
 
     def blur(self, kernel_size):
         if kernel_size % 2 != 1 or kernel_size <= 1:
-            raise ValueError
+            raise ValueError("Kernel size must be odd integer greater than 1")
 
         self.img = cv.blur(self.img, (kernel_size, kernel_size))
 
     def threshold(self, percent_black):
         if percent_black < 0 or percent_black > 1.0:
-            raise ValueError
+            raise ValueError("Percent black must be between 0 and 1.0")
 
         _, self.img = cv.threshold(
             self.img, 255 - int(percent_black * 255), 255, cv.THRESH_BINARY
@@ -178,7 +180,7 @@ class Image:
     # water mark consists of the keys and values in the dictionary passed
     def watermark(self, dictionary):
         if type(dictionary) != dict:
-            raise TypeError
+            raise TypeError("Non dictionary passed in")
 
         if self.is_gray():
             self.bgr_color()
@@ -207,8 +209,8 @@ class Image:
         imwrite(self, self.img, str(path.resolve()))
 
     def scale(self, factor):
-        if factor < 0:
-            raise ValueError
+        if factor <= 0:
+            raise ValueError("Factor must be non negative / zero value")
 
         projected_x_res = round(self.x_res * factor)
         projected_y_res = round(self.y_res * factor)
@@ -219,10 +221,10 @@ class Image:
     # factor that was used
     def scale_bounded(self, x_max, y_max):
         if type(x_max) != int or type(y_max) != int:
-            raise TypeError
+            raise TypeError("x_max and y_max must be integers")
 
         if x_max < 1 or y_max < 1:
-            raise ValueError
+            raise ValueError("x_man and y_max cannot be less than 1")
 
         x_scale = x_max / self.x_res
         y_scale = y_max / self.y_res
@@ -238,20 +240,20 @@ class Image:
 
         for n in [x1, y1, x2, y2]:
             if type(n) != int:
-                raise TypeError
+                raise TypeError("Point contains non integer value")
             if n < 0:
-                raise ValueError
+                raise ValueError("Point contains negative value")
 
         if x1 > self.x_res - 1 or x2 > self.x_res - 1:
-            raise ValueError
+            raise ValueError("Point goes beyond x resolution of image")
         if y1 > self.y_res - 1 or y2 > self.y_res - 1:
-            raise ValueError
+            raise ValueError("Point goes beyond y resolution of image")
 
         self.img = cv.line(self.img, p1, p2, DEFAULT_COLOR, 2)
 
     def draw_point(self, x, y):
         if type(x) != int or type(y) != int:
-            raise TypeError
+            raise TypeError("Point must be integer value")
 
         self.img = cv.drawMarker(
             self.img, (x, y), DEFAULT_COLOR, cv.MARKER_CROSS, 20, 2
