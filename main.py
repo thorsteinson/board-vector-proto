@@ -3,13 +3,8 @@
 # The main interface for the program. Divides everything into sub
 # commands for an easy to use iterface with a single entry point.
 
-import argparse
-import sys
 import asset_manager as assets
 from pathlib import Path
-import cv2 as cv
-import time
-import numpy as np
 from cmdlet import Commander, Cmdlet
 from image import Image
 from window import Window
