@@ -38,7 +38,7 @@ def interactive_add(args):
     win = Window()
     points = []
     win.handle_click(lambda x, y: points.append((x, y)))
-    win.quit_on(lambda points: len(points) >= 4, data=points)
+    win.quit_on(lambda: len(points) >= 4)
     for path in paths:
         img = Image(path)
         factor = img.scale_bounded(X_MAX, Y_MAX)
