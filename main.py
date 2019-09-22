@@ -20,8 +20,6 @@ def get_point(event, x, y, flags, points):
         points.append((x, y))
 
 
-SCALE_FACTOR = 4
-
 X_MAX = 1850
 Y_MAX = 1000
 
