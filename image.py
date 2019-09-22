@@ -229,3 +229,20 @@ class Image:
         self.scale(min(x_scale, y_scale))
 
         return factor
+
+    def draw_line(self, p1, p2):
+        x1, y1 = p1
+        x2, y2 = p2
+
+        for n in [x1, y1, x2, y2]:
+            if type(n) != int:
+                raise TypeError
+            if n < 0:
+                raise ValueError
+
+        if x1 > self.x_res - 1 or x2 > self.x_res - 1:
+            raise ValueError
+        if y1 > self.y_res - 1 or y2 > self.y_res - 1:
+            raise ValueError
+
+        self.img = cv.line(self.img, p1, p2, (192, 36, 27))

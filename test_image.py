@@ -201,5 +201,26 @@ class TestScaleBounded(unittest.TestCase):
         self.assertEquals(init_y, img.y_res)
 
 
+class TestDrawLine(unittest.TestCase):
+    def test_types(self):
+        img = Image(test_array)
+        bad_types = [(("a", "b"), ("a", "b")), ((None, None), ([1, 2.3], {}))]
+        for p0, p1 in bad_types:
+            with self.assertRaises(TypeError):
+                img.draw_line(p0, p1)
+
+    def test_values(self):
+        img = Image(test_array)
+        bad_vals = [((-1, 0), (0, 0)), ((100, 0), (0, 0))]
+        for p0, p1 in bad_vals:
+            with self.assertRaises(ValueError):
+                img.draw_line(p0, p1)
+
+    def test_grayscale(self):
+        img = Image(test_array)
+        img.grayscale()
+        img.draw_line((0, 0), (5, 5))
+
+
 if __name__ == "__main__":
     unittest.main()
