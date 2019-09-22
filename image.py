@@ -246,3 +246,9 @@ class Image:
             raise ValueError
 
         self.img = cv.line(self.img, p1, p2, (192, 36, 27), 2)
+
+    def draw_point(self, x, y):
+        if type(x) != int or type(y) != int:
+            raise TypeError
+
+        self.img = cv.drawMarker(self.img, (x, y), (192, 36, 27), 2)

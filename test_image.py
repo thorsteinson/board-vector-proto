@@ -222,5 +222,18 @@ class TestDrawLine(unittest.TestCase):
         img.draw_line((0, 0), (5, 5))
 
 
+class TestDrawMarker(unittest.TestCase):
+    def test_types(self):
+        img = Image(test_array)
+        bad_types = [(None, 1), (0, {}), (0, "Hello")]
+        for x, y in bad_types:
+            with self.assertRaises(TypeError):
+                img.draw_point(self, x, y)
+
+    def test_res_preserver(self):
+        img = Image(test_array)
+        self.assertTrue(same_res(img, lambda: img.draw_point(5, 5)))
+
+
 if __name__ == "__main__":
     unittest.main()
