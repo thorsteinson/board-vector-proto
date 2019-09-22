@@ -1,4 +1,7 @@
 import cv2 as cv
+import numpy as np
+from image import Image
+
 
 WINDOW_NAME = "Board Vector"
 WAIT_PERIOD = 10
@@ -63,3 +66,11 @@ class Window:
     def close(self):
         self.exit = True
         cv.destroyAllWindows()
+
+    def show(self, img):
+        if isinstance(img, Image):
+            cv.imshow(WINDOW_NAME, img.img)
+        elif isinstance(np.ndarray):
+            cv.imshow(WINDOW_NAME, img)
+        else:
+            raise TypeError
