@@ -12,6 +12,7 @@ import time
 import numpy as np
 from cmdlet import Commander, Cmdlet
 from image import Image
+from window import Window
 
 
 def get_point(event, x, y, flags, points):
@@ -32,9 +33,9 @@ def view(args):
     img = Image(path)
     img.perspective_transform(points)
     img.scale_bounded(X_MAX, Y_MAX)
-    cv.namedWindow("image")
-    cv.imshow("image", img.img)
-    cv.waitKey()
+    win = Window()
+    win.show(img)
+    win.run()
 
 
 def interactive_add(args):
