@@ -245,4 +245,4 @@ class Image:
         if y1 > self.y_res - 1 or y2 > self.y_res - 1:
             raise ValueError
 
-        self.img = cv.line(self.img, p1, p2, (192, 36, 27))
+        self.img = cv.line(self.img, p1, p2, (192, 36, 27), 2)

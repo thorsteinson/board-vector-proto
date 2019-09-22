@@ -37,7 +37,7 @@ class Window:
         self.click_handler = None
         self.exit = False
         # By default, our quit handler just spits out false, no matter what
-        self.quit_handler = lambda _: False
+        self.quit_handler = lambda: False
         self.quit_data = None
         # A dictionary that maps keycodes to handles
         # By default, map q and ESC to quit the program
@@ -75,6 +75,9 @@ class Window:
         if type(k) == int and k not in SPECIAL_KEYS:
             # Not one of the special keys we have codes for
             raise ValueError
+        # Need to organize and fix this disaster
+        elif k in SPECIAL_KEYS:
+            k = k
         elif type(k) == str:
             k = ord(k)
         else:
