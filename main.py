@@ -62,8 +62,6 @@ def interactive_add(args):
             img = scaled
             scaled = copy(img)
             win.show(img)
-            # Call ourself again, so that the point will actually be added
-            add_point(x, y)
 
     # Adds image to the database
     def add_image():
