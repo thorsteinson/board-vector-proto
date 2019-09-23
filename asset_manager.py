@@ -8,6 +8,9 @@ import collections
 import os
 from pathlib import Path
 from cmdlet import Cmdlet
+from typing import List, Tuple
+
+PointType = Tuple[int, int]
 
 # A tuple to represent an entry in our database
 # - Name is the name of the file in our asset directory,
@@ -31,7 +34,7 @@ class AssetManager:
                 self._entries = pickle.load(data_f)
 
     # Adds the entry
-    def add(self, photo_path, points):
+    def add(self, photo_path: Path, points: List[PointType]):
         if not os.path.exists(photo_path):
             raise ValueError
 
@@ -50,7 +53,7 @@ class AssetManager:
         # Persist state
         self.save()
 
-    def delete(self, n):
+    def delete(self, n: int):
         if n < len(self._entries) and n >= 0:
             path = Path(ASSET_FOLDER, self._entries[n].name)
             os.remove(path)
@@ -63,12 +66,12 @@ class AssetManager:
             pickle.dump(self._entries, data_f)
 
     # Returns the PATH (not name), and the transform points
-    def get(self, i):
+    def get(self, i: int):
         entry = self._entries[i]
         return (Path(ASSET_FOLDER, entry.name), entry.points)
 
 
-def validate_points(points):
+def validate_points(points: List[PointType]):
     if len(points) != 4:
         raise ValueError
 

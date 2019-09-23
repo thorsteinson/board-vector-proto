@@ -4,6 +4,7 @@ from typing import Callable, List, Dict, Any
 
 ArgsType = Dict[str, Any]
 
+
 class Cmdlet:
     def __init__(self, name: str, helpmsg: str, runner: Callable):
         self.name = name
@@ -12,7 +13,7 @@ class Cmdlet:
         self.args: ArgsType = {}
 
     # Convenient way to call argparse.add_argument by chaining
-    def add_arg(self, name: str, **params) -> 'Cmdlet':
+    def add_arg(self, name: str, **params) -> "Cmdlet":
         self.args[name] = params
         return self
 
