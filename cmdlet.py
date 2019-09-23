@@ -1,16 +1,18 @@
 import argparse
 import sys
+from typing import Callable, List, Dict, Any
 
+ArgsType = Dict[str, Any]
 
 class Cmdlet:
-    def __init__(self, name, helpmsg, runner):
+    def __init__(self, name: str, helpmsg: str, runner: Callable):
         self.name = name
         self.helpmsg = helpmsg
         self.runner = runner
-        self.args = {}
+        self.args: ArgsType = {}
 
     # Convenient way to call argparse.add_argument by chaining
-    def add_arg(self, name, **params):
+    def add_arg(self, name: str, **params: ArgsType) -> 'Cmdlet':
         self.args[name] = params
         return self
 
@@ -21,7 +23,7 @@ class Cmdlet:
 
 
 class Commander:
-    def __init__(self, cmdlets):
+    def __init__(self, cmdlets: List[Cmdlet]):
         self.cmdlets = cmdlets
 
     def run(self):
