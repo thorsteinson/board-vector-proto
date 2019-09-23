@@ -7,7 +7,6 @@ import pickle
 import collections
 import os
 from pathlib import Path
-import argparse
 from cmdlet import Cmdlet
 
 # A tuple to represent an entry in our database
