@@ -12,7 +12,7 @@ class Cmdlet:
         self.args: ArgsType = {}
 
     # Convenient way to call argparse.add_argument by chaining
-    def add_arg(self, name: str, **params: ArgsType) -> 'Cmdlet':
+    def add_arg(self, name: str, **params) -> 'Cmdlet':
         self.args[name] = params
         return self
 
