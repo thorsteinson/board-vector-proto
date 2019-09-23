@@ -78,10 +78,10 @@ class Image:
                 region.add((x, y))
 
         # Create a new a array of the same shape
-        filtered = np.zeros_like(img)
+        filtered = np.zeros_like(self.img)
 
         WHITE = 255
-        for (x, y), n in np.ndenumerate(img):
+        for (x, y), n in np.ndenumerate(self.img):
             if n == 0 and len(regionMap[(x, y)]) < area:
                 n = WHITE
 
