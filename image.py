@@ -1,15 +1,18 @@
-import cv2 as cv
-import numpy as np
+import cv2 as cv  # type: ignore
+import numpy as np  # type: ignore
 from pathlib import Path
 from copy import copy
+from typing import Dict, List, Set, Tuple, Any, Union
 
 DEFAULT_COLOR = (192, 36, 27)
+
+PointType = Tuple[int, int]
 
 
 class Image:
     # Allow an image to be constructed from either a path that
     # references an image or an array literal
-    def __init__(self, image):
+    def __init__(self, image: Union[Path, np.ndarray]):
         if isinstance(image, Path):
             # Since imread doesn't raise an exception, attempt to grab
             # the file handle to trigger an appropriate error if there
@@ -24,12 +27,12 @@ class Image:
                 "Image must be constructed with a numpy array or path to an image"
             )
 
-    def __copy__(self):
+    def __copy__(self) -> "Image":
         return Image(copy(self.img))
 
     # Looks at number of dimensions to determine whether the image is
     # color or grayscale in colorspace
-    def is_gray(self):
+    def is_gray(self) -> bool:
         if len(self.img.shape) == 2:
             return True
         elif len(self.img.shape) == 3:
@@ -49,7 +52,7 @@ class Image:
     # Takes a binary image, and applies a threshold on sections of pixels
     # that don't meet a given area. This can effectively filter bits of
     # noise from actual blocks of text we wish to capture on the board
-    def area_threshold(self, area):
+    def area_threshold(self, area: int):
         if not self.is_gray():
             raise ValueError("Image must be grayscale")
 
@@ -57,7 +60,7 @@ class Image:
             raise ValueError("Area cannot be less than 1")
 
         # Keep track of each coordinate and the set that it belongs to
-        regionMap = {}
+        regionMap: Dict[PointType, Set[PointType]] = {}
 
         # Iterate through all coordinates of the image
         for (x, y), n in np.ndenumerate(self.img):
@@ -66,7 +69,7 @@ class Image:
                 leftNeighbor = (x - 1, y)
                 upNeighbor = (x, y - 1)
 
-                region = set()
+                region: Set[PointType] = set()
 
                 if leftNeighbor[0] >= 0 and leftNeighbor in regionMap:
                     region = regionMap[leftNeighbor]
@@ -89,7 +92,7 @@ class Image:
 
         self.img = filtered
 
-    def crop_border(self, percent):
+    def crop_border(self, percent: float):
         if percent > 0.5 or percent < 0:
             raise ValueError("Border percent must be between 0-0.5")
 
@@ -105,7 +108,7 @@ class Image:
         )
 
     # Returns an image that's projected from the 4 given points
-    def perspective_transform(self, points):
+    def perspective_transform(self, points: List[PointType]):
         if len(points) != 4:
             raise ValueError("Exactly 4 points must be provided")
         for x, y in points:
@@ -133,7 +136,7 @@ class Image:
 
         self.img = cv.warpPerspective(self.img, transM, (maxW, maxH))
 
-    def adaptive_threshold(self, block_size, c):
+    def adaptive_threshold(self, block_size: int, c: float):
         if block_size % 2 != 1 or block_size <= 1:
             raise ValueError("Block size must be odd integer greater than 1")
         try:
@@ -152,13 +155,13 @@ class Image:
             c,
         )  # Constant that is subtracted during thresholding
 
-    def blur(self, kernel_size):
+    def blur(self, kernel_size: int):
         if kernel_size % 2 != 1 or kernel_size <= 1:
             raise ValueError("Kernel size must be odd integer greater than 1")
 
         self.img = cv.blur(self.img, (kernel_size, kernel_size))
 
-    def threshold(self, percent_black):
+    def threshold(self, percent_black: float):
         if percent_black < 0 or percent_black > 1.0:
             raise ValueError("Percent black must be between 0 and 1.0")
 
@@ -169,16 +172,16 @@ class Image:
     # It's nice to have these properties, because it can be easy to
     # forget that y is the first value in the shape and x is the 2nd
     @property
-    def x_res(self):
+    def x_res(self) -> int:
         return self.img.shape[1]
 
     @property
-    def y_res(self):
+    def y_res(self) -> int:
         return self.img.shape[0]
 
     # Writes a watermark to the bottom left corner of an image. The
     # water mark consists of the keys and values in the dictionary passed
-    def watermark(self, dictionary):
+    def watermark(self, dictionary: Dict[Any, Any]):
         if type(dictionary) != dict:
             raise TypeError("Non dictionary passed in")
 
@@ -203,12 +206,12 @@ class Image:
 
     # Writes the image to the specified path, possibly encoding the
     # image in the process
-    def save(self, path):
+    def save(self, path: Path):
         f = open(path, "wb")
         f.close()
-        imwrite(self, self.img, str(path.resolve()))
+        cv.imwrite(self, self.img, str(path.resolve()))
 
-    def scale(self, factor):
+    def scale(self, factor: Union[float, int]):
         if factor <= 0:
             raise ValueError("Factor must be non negative / zero value")
 
@@ -219,7 +222,7 @@ class Image:
     # Scales an image so that it's bounded by either the x or y max
     # provided. The aspect ratio is preserved. Returns the scaling
     # factor that was used
-    def scale_bounded(self, x_max, y_max):
+    def scale_bounded(self, x_max: int, y_max: int):
         if type(x_max) != int or type(y_max) != int:
             raise TypeError("x_max and y_max must be integers")
 
@@ -234,7 +237,7 @@ class Image:
 
         return factor
 
-    def draw_line(self, p1, p2):
+    def draw_line(self, p1: PointType, p2: PointType):
         x1, y1 = p1
         x2, y2 = p2
 
@@ -251,7 +254,7 @@ class Image:
 
         self.img = cv.line(self.img, p1, p2, DEFAULT_COLOR, 2)
 
-    def draw_point(self, x, y):
+    def draw_point(self, x: int, y: int):
         if type(x) != int or type(y) != int:
             raise TypeError("Point must be integer value")
 
