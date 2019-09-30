@@ -237,6 +237,20 @@ class Image:
 
         return factor
 
+    # Like scale bounded, but instead of ensuring it fits within the
+    # bounds, it ensures that it's a minimum of one of the dimensions.
+    def scale_min(self, x_min: int, y_min: int) -> float:
+        if x_min < 1 or y_min < 1:
+            raise ValueError("x_min and y_min must be greater than 1")
+
+        x_scale = x_min / self.x_res
+        y_scale = y_min / self.y_res
+
+        factor = max(x_scale, y_scale)
+        self.scale(factor)
+
+        return factor
+
     def draw_line(self, p1: PointType, p2: PointType):
         x1, y1 = p1
         x2, y2 = p2
