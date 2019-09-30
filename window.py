@@ -28,7 +28,6 @@ class Window:
         cv.namedWindow(WINDOW_NAME)
 
         self.loop = asyncio.get_event_loop()
-
         self.pos_fut = self.loop.create_future()
 
         def cv_click_callback(event, x, y, flags, params):
@@ -41,10 +40,16 @@ class Window:
         self.key_fut = self.loop.create_future()
 
     def run(self, coro):
+        task = self.loop.create_task(coro)
+
         # Drives the events through the usage of waitkey. Without it,
         # no events will ever be registered
         def driver():
             key_code = cv.waitKey(WAIT_PERIOD)
+            if key_code == ord("q") or key_code == KEY_ESC:
+                # Quit, the user wants out
+                task.cancel()
+                return
             if key_code != NULL_CODE:
                 if self.key_fut.done():
                     # Reset our future, so old keys aren't sent
@@ -59,8 +64,11 @@ class Window:
             self.loop.call_soon(driver)
 
         self.loop.call_soon(driver)
-        self.loop.run_until_complete(coro)
-        cv.destroyAllWindows()
+        try:
+            self.loop.run_until_complete(task)
+            return True
+        except asyncio.CancelledError:
+            return False
 
     # Returns the X, Y coordinates of the position clicked
     async def click(self):
