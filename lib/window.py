@@ -1,8 +1,9 @@
-import cv2 as cv
-import numpy as np
+import cv2 as cv # type: ignore
+import numpy as np # type: ignore
 import sys
 import asyncio
 from .image import Image
+from typing import *
 
 
 WINDOW_NAME = "Board Vector"
@@ -19,6 +20,8 @@ KEY_ESC = 27
 SPECIAL_KEYS = {KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT, KEY_SPACE, KEY_ENTER, KEY_ESC}
 
 NULL_CODE = 255
+
+PointType = Tuple[int, int]
 
 
 # Adds a control layer for the OpenCV window and event
@@ -40,7 +43,7 @@ class Window:
 
         self.key_fut = self.loop.create_future()
 
-    def run(self, coro):
+    def run(self, coro: Awaitable) -> bool:
         self._setup_callbacks()
 
         task = self.loop.create_task(coro)
@@ -79,14 +82,14 @@ class Window:
                 return
 
     # Returns the X, Y coordinates of the position clicked
-    async def click(self):
+    async def click(self) -> PointType:
         p = await self.pos_fut
         # Reset the future for the next click
         self.pos_fut = self.loop.create_future()
         return p
 
     # Returns the keycode, or the character pressed if possible
-    async def keypress(self):
+    async def keypress(self) -> Union[int, str]:
         key_code = await self.key_fut
         self.key_fut = self.loop.create_future()
         if key_code in SPECIAL_KEYS:
@@ -94,7 +97,7 @@ class Window:
         else:
             return chr(key_code)
 
-    def show(self, img):
+    def show(self, img: Image):
         if isinstance(img, Image):
             cv.imshow(WINDOW_NAME, img.img)
         elif isinstance(np.ndarray):
