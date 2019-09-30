@@ -70,6 +70,11 @@ def interactive_add(args):
                     add_image()
                     break
 
+                # Reset
+                points.clear()
+                img = copy(scaled)
+                win.show(img)
+
     win = Window()
     win.run(add())
 
