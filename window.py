@@ -34,10 +34,6 @@ class Window:
         def cv_click_callback(event, x, y, flags, params):
             # Fire only when the button is lifted up
             if event == cv.EVENT_LBUTTONUP:
-                if self.pos_fut.done():
-                    # Reset future if it was already done. Don't
-                    # return old clicks
-                    self.pos_fut = self.loop.create_future()
                 self.pos_fut.set_result((x, y))
 
         cv.setMouseCallback(WINDOW_NAME, cv_click_callback, None)
@@ -54,6 +50,10 @@ class Window:
                     # Reset our future, so old keys aren't sent
                     self.key_fut = self.loop.create_future()
                 self.key_fut.set_result(key_code)
+
+            # Reset future to ensure clicks aren't queued
+            if self.pos_fut.done():
+                self.pos_fut = self.loop.create_future()
 
             # Keep calling this, driving the main event loop
             self.loop.call_soon(driver)
