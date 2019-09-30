@@ -1,8 +1,8 @@
 from image import Image
-from cmdlet import Cmdlet
 from copy import copy
 
 from typing import *
+import random as rand
 
 PointType = Tuple[int, int]
 
@@ -17,8 +17,7 @@ def filter_letterforms(
         adaptive_thresh_block: int,
         adaptive_c: float,
         thresh_percent: float,
-        area: int,
-        image: Image) -> Image:
+        area: int) -> Image:
     img = copy(img)
 
     # Apply the transformation to the board portion of the image
@@ -52,3 +51,14 @@ def filter_letterforms(
     img.area_threshold(area)
 
     return img
+
+# Returns a generator that yields random parameters for testing
+def gen_parameters() -> Iterator:
+    while True:
+        yield {
+            "blur_kernel": rand.randrange(3, 30, step=2),
+            "adaptive_thresh_block": rand.randrange(3, 30, step=2),
+            "adaptive_c": rand.uniform(0, 5),
+            "thresh_percent": rand.uniform(0, 0.2),
+            "area": rand.randrange(1, 20)
+        }
