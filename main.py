@@ -7,13 +7,15 @@ from lib.window import KEY_ENTER
 from lib import get_window, get_asset_mgr
 from pathlib import Path
 from copy import copy
-
+from argparse import Namespace
+from typing import *
 
 X_MAX = 1850
 Y_MAX = 1000
 
+PointType = Tuple[int, int]
 
-def view(args):
+def view(args: Namespace):
     mgr = get_asset_mgr()
 
     (path, points) = mgr.get(args.n)
@@ -26,10 +28,10 @@ def view(args):
     win.run_until_quit()
 
 
-def interactive_add(args):
+def interactive_add(args: Namespace):
     mgr = get_asset_mgr()
     paths = [Path(p) for p in args.photopaths]
-    points = []
+    points: List[PointType] = []
 
     async def add():
         # Adds image to the database
