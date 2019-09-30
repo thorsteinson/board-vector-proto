@@ -25,7 +25,7 @@ def view(args):
     img.scale_bounded(X_MAX, Y_MAX)
     win = Window()
     win.show(img)
-    win.run()
+    win.run_until_quit()
 
 
 def interactive_add(args):

@@ -27,6 +27,7 @@ class Window:
     def __init__(self):
         cv.namedWindow(WINDOW_NAME)
 
+    def _setup_callbacks(self):
         self.loop = asyncio.get_event_loop()
         self.pos_fut = self.loop.create_future()
 
@@ -40,6 +41,8 @@ class Window:
         self.key_fut = self.loop.create_future()
 
     def run(self, coro):
+        self._setup_callbacks()
+
         task = self.loop.create_task(coro)
 
         # Drives the events through the usage of waitkey. Without it,
@@ -69,6 +72,11 @@ class Window:
             return True
         except asyncio.CancelledError:
             return False
+
+    def run_until_quit(self):
+        while True:
+            if cv.waitKey(-1) == ord("q") or key_code == KEY_ESC:
+                return
 
     # Returns the X, Y coordinates of the position clicked
     async def click(self):
