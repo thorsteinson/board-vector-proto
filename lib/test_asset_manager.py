@@ -1,5 +1,5 @@
 import unittest
-from asset_manager import validate_points
+from .asset_manager import validate_points
 
 
 class TestPointValidation(unittest.TestCase):

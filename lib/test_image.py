@@ -1,5 +1,5 @@
 import unittest
-from image import Image
+from .image import Image
 import numpy as np
 from pathlib import Path
 from copy import copy

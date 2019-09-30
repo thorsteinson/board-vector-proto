@@ -7,8 +7,8 @@ import pickle
 import collections
 import os
 from pathlib import Path
-from cmdlet import Cmdlet
 from typing import List, Tuple
+from .cmdlet import Cmdlet
 
 PointType = Tuple[int, int]
 

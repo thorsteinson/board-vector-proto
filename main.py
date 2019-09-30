@@ -1,13 +1,11 @@
 #!/usr/bin/python3
 
-# The main interface for the program. Divides everything into sub
-# commands for an easy to use iterface with a single entry point.
-
-import asset_manager as assets
+from lib.asset_manager import add_cmd, delete_cmd
+from lib.cmdlet import Commander, Cmdlet
+from lib.image import Image
+from lib.window import KEY_ENTER
+from lib import get_window, get_asset_mgr
 from pathlib import Path
-from cmdlet import Commander, Cmdlet
-from image import Image
-from window import Window, KEY_ENTER, KEY_SPACE
 from copy import copy
 
 
@@ -16,20 +14,20 @@ Y_MAX = 1000
 
 
 def view(args):
-    mgr = assets.AssetManager()
+    mgr = get_asset_mgr()
 
     (path, points) = mgr.get(args.n)
 
     img = Image(path)
     img.perspective_transform(points)
     img.scale_bounded(X_MAX, Y_MAX)
-    win = Window()
+    win = get_window()
     win.show(img)
     win.run_until_quit()
 
 
 def interactive_add(args):
-    mgr = assets.AssetManager()
+    mgr = get_asset_mgr()
     paths = [Path(p) for p in args.photopaths]
     points = []
 
@@ -75,7 +73,7 @@ def interactive_add(args):
                 img = copy(scaled)
                 win.show(img)
 
-    win = Window()
+    win = get_window()
     win.run(add())
 
 
@@ -92,5 +90,5 @@ if __name__ == "__main__":
     )
     view_cmd.add_arg("n", type=int, help="Image number in the db to lookup")
 
-    commander = Commander([assets.add_cmd, assets.delete_cmd, iadd_cmd, view_cmd])
+    commander = Commander([add_cmd, delete_cmd, iadd_cmd, view_cmd])
     commander.run()

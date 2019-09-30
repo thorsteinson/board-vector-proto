@@ -2,7 +2,7 @@ import cv2 as cv
 import numpy as np
 import sys
 import asyncio
-from image import Image
+from .image import Image
 
 
 WINDOW_NAME = "Board Vector"
