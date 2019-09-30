@@ -222,7 +222,7 @@ class Image:
     # Scales an image so that it's bounded by either the x or y max
     # provided. The aspect ratio is preserved. Returns the scaling
     # factor that was used
-    def scale_bounded(self, x_max: int, y_max: int):
+    def scale_bounded(self, x_max: int, y_max: int) -> float:
         if type(x_max) != int or type(y_max) != int:
             raise TypeError("x_max and y_max must be integers")
 
@@ -233,7 +233,7 @@ class Image:
         y_scale = y_max / self.y_res
 
         factor = min(x_scale, y_scale)
-        self.scale(min(x_scale, y_scale))
+        self.scale(factor)
 
         return factor
 
