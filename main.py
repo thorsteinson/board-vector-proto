@@ -31,60 +31,47 @@ def view(args):
 def interactive_add(args):
     mgr = assets.AssetManager()
     paths = [Path(p) for p in args.photopaths]
-    win = Window()
     points = []
-    img = None
-    scaled = None
-    factor = None
-    image_added = False
 
-    def add_point(x, y):
-        nonlocal scaled, img
-
-        # Add no more points after the 4th
-        if len(points) < 4:
-            points.append((x, y))
-            if len(points) == 4:
-                p1 = points[-1]
-                p2 = points[0]
-                img.draw_line(p1, p2)
-            if len(points) > 1:
-                p1 = points[-2]
-                p2 = points[-1]
-                img.draw_line(p1, p2)
-
-            img.draw_point(x, y)
-            win.show(img)
-        else:
-            # Reset image to the scaled down version with no lines, and
-            # then copy again
-            points.clear()
-            img = scaled
-            scaled = copy(img)
-            win.show(img)
-
-    # Adds image to the database
-    def add_image():
-        nonlocal image_added
-
-        if len(points) == 4:
+    async def add():
+        # Adds image to the database
+        def add_image():
             inverse = 1 / factor
             mgr.add(
                 path, [(round(p[0] * inverse), round(p[1] * inverse)) for p in points]
             )
             points.clear()
-            image_added = True
 
-    win.handle_click(add_point)
-    win.handle_key(KEY_ENTER, add_image)
-    win.quit_on(lambda: image_added == True)
-    for path in paths:
-        image_added = False
-        img = Image(path)
-        factor = img.scale_bounded(X_MAX, Y_MAX)
-        scaled = copy(img)
-        win.show(img)
-        win.run()
+        for path in paths:
+            img = Image(path)
+            factor = img.scale_bounded(X_MAX, Y_MAX)
+            scaled = copy(img)
+            win.show(img)
+
+            while True:
+                while len(points) < 4:
+                    x, y = await win.click()
+                    points.append((x, y))
+                    if len(points) == 4:
+                        p1 = points[-1]
+                        p2 = points[0]
+                        img.draw_line(p1, p2)
+                    if len(points) > 1:
+                        p1 = points[-2]
+                        p2 = points[-1]
+                        img.draw_line(p1, p2)
+
+                    img.draw_point(x, y)
+                    win.show(img)
+
+                k = await win.keypress()
+
+                if k == KEY_ENTER:
+                    add_image()
+                    break
+
+    win = Window()
+    win.run(add())
 
 
 if __name__ == "__main__":
