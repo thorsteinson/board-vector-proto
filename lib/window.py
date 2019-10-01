@@ -1,5 +1,5 @@
-import cv2 as cv # type: ignore
-import numpy as np # type: ignore
+import cv2 as cv  # type: ignore
+import numpy as np  # type: ignore
 import sys
 import asyncio
 from .image import Image
