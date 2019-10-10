@@ -2,5 +2,6 @@ experiment/
 assets/
 __pycache__/
 .mypy_cache/
+doc.org
 *.jpg
 *.png
