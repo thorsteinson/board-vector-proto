@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 
-from params import *
+from .params import *
 
 import gi
 
@@ -138,8 +138,9 @@ class MyWindow(Gtk.Window):
         self.box.pack_start(self.button1, False, False, 0)
 
 
-# Onetime setup
-win = MyWindow()
-win.show_all()
-win.connect("destroy", quit)
-Gtk.main()
+def main(args):
+    # Onetime setup
+    win = MyWindow()
+    win.show_all()
+    win.connect("destroy", quit)
+    Gtk.main()

@@ -5,6 +5,7 @@ from lib.cmdlet import Commander, Cmdlet
 from lib.image import Image
 from lib.window import KEY_ENTER
 from lib import get_window, get_asset_mgr
+from lib.gtk import window
 from pathlib import Path
 from copy import copy
 from argparse import Namespace
@@ -92,5 +93,11 @@ if __name__ == "__main__":
     )
     view_cmd.add_arg("n", type=int, help="Image number in the db to lookup")
 
-    commander = Commander([add_cmd, delete_cmd, iadd_cmd, view_cmd])
+    gtk_cmd = Cmdlet(
+        "gtk",
+        "Run an interactive GTK application",
+        window.main
+    )
+
+    commander = Commander([add_cmd, delete_cmd, iadd_cmd, view_cmd, gtk_cmd])
     commander.run()
