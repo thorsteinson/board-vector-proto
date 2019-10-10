@@ -2,11 +2,12 @@
 
 
 from .params import *
+from .widget import Switch
 
-import gi
+import gi # type: ignore
 
 gi.require_version("Gtk", "3.0")
-from gi.repository import Gtk
+from gi.repository import Gtk # type: ignore
 
 
 class RangeComponent:
@@ -46,10 +47,7 @@ class FunctionComponent:
         self.label.set_margin_top(30)
         self.label.set_margin_bottom(10)
 
-        self.switch = Gtk.Switch()
-        self.switch.set_state(True) # Set to true by default
-        self.switch.set_valign(Gtk.Align.CENTER)
-        self.switch.set_halign(Gtk.Align.CENTER)
+        self.switch = Switch()
 
     # Returns a tuple with the name of the associated function (should
     # match the method of 'img' we wish to use) as well as any
@@ -62,7 +60,7 @@ class FunctionComponent:
 
     @property
     def is_enabled(self):
-        return self.switch.get_state()
+        return self.switch.on
 
 # Use a grid for nice alignment of all the functions and their
 # parameters together
@@ -85,7 +83,7 @@ class FunctionListComponent:
             self.grid.attach(func.label, 1, row_idx, 1, 1)
 
             # Add the switch
-            self.grid.attach(func.switch, 2, row_idx, 1, row_height)
+            self.grid.attach(func.switch.internal_widget, 2, row_idx, 1, row_height)
 
             # Add the Sliders underneath with labels for the params
             for i, comp in enumerate(func.components):
