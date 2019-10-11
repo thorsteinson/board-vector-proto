@@ -15,6 +15,12 @@ class Margins(NamedTuple):
     bottom: int
 
 
+# How a widget should be packed when added to a box
+class Packing(NamedTuple):
+    fill: bool
+    expand: bool
+
+
 class Orientation(enum.Enum):
     HORIZONTAL = Gtk.Orientation.HORIZONTAL
     VERTICAL = Gtk.Orientation.VERTICAL
@@ -44,6 +50,8 @@ class Widget:
 
         # Modify the default alignment, since fill tends to be ridiculous
         self.align = (Align.CENTER, Align.CENTER)
+
+        self.packing = Packing(fill=False, expand=False)
 
     @property
     def margins(self) -> Margins:
@@ -101,7 +109,6 @@ class Widget:
 class Switch(Widget):
     def __init__(self, on=True):
         super().__init__(Gtk.Switch())
-        print(self.internal_widget)
         self.internal_widget.set_state(on)
 
     @property
@@ -124,6 +131,8 @@ class Grid(Widget):
         # Modify the default alignment, as we likely want these fill
         self.align = (Align.FILL, Align.FILL)
 
+        self.packing = Packing(fill=True, expand=True)
+
     def attach(
         self,
         widget: Widget,
@@ -142,7 +151,44 @@ class Grid(Widget):
             self.internal_widget.remove(child)
 
 
-# A smart scale object that takes a range parameter for a well define
+# A wrapper for the basic box. However, this box allows for taking
+# children as part of the initialization, instead of having to add
+# them manually. It's a bit more declarative in this way.
+class Box(Widget):
+    def __init__(self, *children: Widget, spacing=10):
+        super().__init__(Gtk.Box(spacing))
+        for child in children:
+            self.add(child)
+
+        self.align = (Align.FILL, Align.FILL)
+
+    # Convenience method for adding our wrapped widgets. Since wrapped
+    # widgets have their own packing information, we use that but can
+    # override if we really want to
+    def add(self, widget, packing=None, spacing=0):
+        if packing == None:
+            packing = widget.packing
+
+        self.internal_widget.pack_start(
+            widget.internal_widget, packing.expand, packing.fill, spacing
+        )
+
+
+# Convenience boxes that have the orientation set to vertical and
+# horizontal respectively
+class HBox(Box):
+    def __init__(self, *children: Widget, **kwargs):
+        super().__init__(*children, **kwargs)
+        self.internal_widget.set_orientation(Orientation.HORIZONTAL.value)
+
+
+class VBox(Box):
+    def __init__(self, *children: Widget, **kwargs):
+        super().__init__(*children, **kwargs)
+        self.internal_widget.set_orientation(Orientation.VERTICAL.value)
+
+
+# A smart scale object that takes a range parameter for a well defined
 # range and whose value always reflects a valid value within that range
 class Scale(Widget):
     def __init__(
@@ -214,34 +260,20 @@ class ScaleGrid(Grid):
             self.attach(scale, 1, row_idx)
 
 
-class FunctionComponent(Widget):
+class FunctionComponent(VBox):
     def __init__(self, function_name, range_pairs: List[Tuple[str, RangeParam]]):
-        super().__init__(Gtk.Box(spacing=10))
-
-        # VBox, with the label for the function,
-        self.internal_widget.set_orientation(Orientation.VERTICAL.value)
-
         function_label = Label(function_name)
-        self.internal_widget.add(function_label.internal_widget)
-
-        # HBox, with the scale_grid, and the switch
         parameter_grid = ScaleGrid(range_pairs)
         self.enabled_switch = Switch()
-        self.enabled_switch.align = (Align.CENTER, Align.CENTER)
-
-        hbox = Gtk.Box(spacing=10)
-        hbox.set_halign(Gtk.Align.FILL)
-        hbox.set_orientation(Orientation.HORIZONTAL.value)
-        hbox.pack_start(parameter_grid.internal_widget, True, True, 0)
-        hbox.pack_start(self.enabled_switch.internal_widget, False, False, 0)
-
-        self.internal_widget.pack_start(function_label.internal_widget, False, False, 0)
-        self.internal_widget.pack_start(hbox, True, True, 0)
-        self.internal_widget.set_halign(Gtk.Align.FILL)
 
         # Create references so we can determine value as it updates
         self.scales = parameter_grid.scales
         self.function_name = function_name
+
+        super().__init__(
+            function_label, HBox(parameter_grid, self.enabled_switch)
+        )
+
 
     @property
     def value(self) -> Tuple[str, List[Any]]:
