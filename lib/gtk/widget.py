@@ -17,7 +17,7 @@ class Margins(NamedTuple):
 
 class Orientation(enum.Enum):
     HORIZONTAL = Gtk.Orientation.HORIZONTAL
-    VERTICAL = Gtk.Oritentation.VERTICAL
+    VERTICAL = Gtk.Orientation.VERTICAL
 
 
 class Align(enum.Enum):
@@ -31,8 +31,8 @@ class Align(enum.Enum):
 class Position(enum.Enum):
     LEFT = Gtk.PositionType.LEFT
     RIGHT = Gtk.PositionType.RIGHT
-    UP = Gtk.PositionType.UP
-    DOWN = Gtk.PositionType.DOWN
+    TOP = Gtk.PositionType.TOP
+    BOTTOM = Gtk.PositionType.BOTTOM
 
 
 # Takes a GTK widget and wraps it up in a nicer interface for us to
@@ -79,6 +79,22 @@ class Widget:
     def min_width(self, width):
         self.internal_widget.set_size_request(width, -1)
 
+    @property
+    def vexpand(self) -> bool:
+        return self.internal_widget.get_vexpand()
+
+    @vexpand.setter
+    def vexpand(self, should_expand: bool):
+        self.internal_widget.set_vexpand(should_expand)
+
+    @property
+    def hexpand(self) -> bool:
+        return self.internal_widget.get_hexpand()
+
+    @hexpand.setter
+    def hexpand(self, should_expand: bool):
+        self.internal_widget.set_hexpand(should_expand)
+
 
 # Make a switch that's on by default, and with a simple on property
 # that reads the state of the underlying widget.
@@ -105,6 +121,9 @@ class Grid(Widget):
     def __init__(self):
         super().__init__(Gtk.Grid())
 
+        # Modify the default alignment, as we likely want these fill
+        self.align = (Align.FILL, Align.FILL)
+
     def attach(
         self,
         widget: Widget,
@@ -129,8 +148,8 @@ class Scale(Widget):
     def __init__(
         self,
         range: RangeParam,
-        orientation: Orientation = Orientation.VERTICAL,
-        val_pos: Position = Position.LEFT,
+        orientation: Orientation = Orientation.HORIZONTAL,
+        val_pos: Position = Position.RIGHT,
     ):
         super().__init__(
             Gtk.Scale.new_with_range(
@@ -142,7 +161,7 @@ class Scale(Widget):
         self.internal_widget.set_orientation(orientation.value)
 
         # Set the value position
-        self.internal_widget.set_value_pos(val_pos)
+        self.internal_widget.set_value_pos(val_pos.value)
 
         self.range = range
         self._val = range.default
@@ -171,3 +190,63 @@ class Scale(Widget):
         if self.range.is_int:
             return round(self._val)
         return self._val
+
+
+# A collection of widgets for scales, along with associated labels,
+# all under a single grid
+class ScaleGrid(Grid):
+    def __init__(self, range_pairs: List[Tuple[str, RangeParam]]):
+        super().__init__()
+
+        self.scales: List[Scale] = []
+
+        for row_idx, (text, range_p) in enumerate(range_pairs):
+            label = Label(text)
+            label.align = (Align.END, Align.FILL)
+
+            scale = Scale(range_p)
+            scale.align = (Align.FILL, Align.CENTER)
+            scale.hexpand = True
+
+            self.scales.append(scale)
+
+            self.attach(label, 0, row_idx)
+            self.attach(scale, 1, row_idx)
+
+
+class FunctionComponent(Widget):
+    def __init__(self, function_name, range_pairs: List[Tuple[str, RangeParam]]):
+        super().__init__(Gtk.Box(spacing=10))
+
+        # VBox, with the label for the function,
+        self.internal_widget.set_orientation(Orientation.VERTICAL.value)
+
+        function_label = Label(function_name)
+        self.internal_widget.add(function_label.internal_widget)
+
+        # HBox, with the scale_grid, and the switch
+        parameter_grid = ScaleGrid(range_pairs)
+        self.enabled_switch = Switch()
+        self.enabled_switch.align = (Align.CENTER, Align.CENTER)
+
+        hbox = Gtk.Box(spacing=10)
+        hbox.set_halign(Gtk.Align.FILL)
+        hbox.set_orientation(Orientation.HORIZONTAL.value)
+        hbox.pack_start(parameter_grid.internal_widget, True, True, 0)
+        hbox.pack_start(self.enabled_switch.internal_widget, False, False, 0)
+
+        self.internal_widget.pack_start(function_label.internal_widget, False, False, 0)
+        self.internal_widget.pack_start(hbox, True, True, 0)
+        self.internal_widget.set_halign(Gtk.Align.FILL)
+
+        # Create references so we can determine value as it updates
+        self.scales = parameter_grid.scales
+        self.function_name = function_name
+
+    @property
+    def value(self) -> Tuple[str, List[Any]]:
+        return (self.function_name, [s.value for s in self.scales])
+
+    @property
+    def enabled(self) -> bool:
+        return self.enabled_switch.on
