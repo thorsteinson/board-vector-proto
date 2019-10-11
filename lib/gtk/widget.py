@@ -155,8 +155,9 @@ class Grid(Widget):
 # children as part of the initialization, instead of having to add
 # them manually. It's a bit more declarative in this way.
 class Box(Widget):
-    def __init__(self, *children: Widget, spacing=10):
+    def __init__(self, *children: Widget, spacing: int = 10, homogeneous: bool = False):
         super().__init__(Gtk.Box(spacing))
+        self.internal_widget.set_homogeneous(homogeneous)
         for child in children:
             self.add(child)
 
@@ -261,7 +262,7 @@ class ScaleGrid(Grid):
 
 
 class FunctionComponent(VBox):
-    def __init__(self, function_name, range_pairs: List[Tuple[str, RangeParam]]):
+    def __init__(self, function_name: str, range_pairs: List[Tuple[str, RangeParam]]):
         function_label = Label(function_name)
         parameter_grid = ScaleGrid(range_pairs)
         self.enabled_switch = Switch()
@@ -270,10 +271,7 @@ class FunctionComponent(VBox):
         self.scales = parameter_grid.scales
         self.function_name = function_name
 
-        super().__init__(
-            function_label, HBox(parameter_grid, self.enabled_switch)
-        )
-
+        super().__init__(function_label, HBox(parameter_grid, self.enabled_switch))
 
     @property
     def value(self) -> Tuple[str, List[Any]]:
