@@ -41,6 +41,12 @@ class Position(enum.Enum):
     BOTTOM = Gtk.PositionType.BOTTOM
 
 
+class FontWeight(enum.Enum):
+    NORMAL = "normal"
+    BOLD = "bold"
+    LIGHT = "light"
+
+
 # Takes a GTK widget and wraps it up in a nicer interface for us to
 # work with. Adds setters and properties for commonly accessed
 # elements of widgets.
@@ -125,8 +131,17 @@ class Label(Widget):
         css_str = f"label {{font-size: {scale * 100}%; }}"
         provider = Gtk.CssProvider()
         provider.load_from_data(bytes(css_str, encoding="utf-8"))
-        self.internal_widget.get_style_context().add_provider(provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
+        self.internal_widget.get_style_context().add_provider(
+            provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
+        )
 
+    def weight(self, weight: FontWeight):
+        css_str = f"label {{font-weight: {weight.value}; }}"
+        provider = Gtk.CssProvider()
+        provider.load_from_data(bytes(css_str, encoding="utf-8"))
+        self.internal_widget.get_style_context().add_provider(
+            provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
+        )
 
 
 # A wrapper for the grid that allows us to add our wrapped widgets
@@ -272,6 +287,7 @@ class FunctionComponent(VBox):
     def __init__(self, function_name: str, range_pairs: List[Tuple[str, RangeParam]]):
         function_label = Label(function_name)
         function_label.scale(1.2)
+        function_label.weight(FontWeight.BOLD)
 
         parameter_grid = ScaleGrid(range_pairs)
         self.enabled_switch = Switch()
