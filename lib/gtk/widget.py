@@ -121,6 +121,15 @@ class Switch(Widget):
     def on(self):
         return self.interactive_add.get_state()
 
+# A dictionary of Gtk Widgets and associated css entities
+WIDGET_CSS_NAMES = {
+    Gtk.Label: "label",
+}
+
+# Mutates a widget by adding a CSS property
+def add_css(w: Widget, prop: str, val: Any):
+    css_entity = WIDGET_CSS_NAMES[type(gtk.internal_widget)]
+    provider = Gtk.CssProvider()
 
 # A class that makes adding text really simple.
 class Label(Widget):

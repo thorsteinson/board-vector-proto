@@ -16,6 +16,7 @@ Y_MAX = 1000
 
 PointType = Tuple[int, int]
 
+
 def view(args: Namespace):
     mgr = get_asset_mgr()
 
@@ -93,11 +94,7 @@ if __name__ == "__main__":
     )
     view_cmd.add_arg("n", type=int, help="Image number in the db to lookup")
 
-    gtk_cmd = Cmdlet(
-        "gtk",
-        "Run an interactive GTK application",
-        window.main
-    )
+    gtk_cmd = Cmdlet("gtk", "Run an interactive GTK application", window.main)
 
     commander = Commander([add_cmd, delete_cmd, iadd_cmd, view_cmd, gtk_cmd])
     commander.run()

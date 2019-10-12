@@ -9,6 +9,7 @@ import gi  # type: ignore
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk  # type: ignore
 
+
 class MyWindow(Gtk.Window):
     def __init__(self):
         Gtk.Window.__init__(self, title="Hello World")
@@ -38,7 +39,6 @@ class MyWindow(Gtk.Window):
         # self.button1.connect("clicked", trigger_click1)
         self.box.add(f_comp1.internal_widget)
         # self.add(self.button1, False, False, 0)
-
 
 
 def main(args):
